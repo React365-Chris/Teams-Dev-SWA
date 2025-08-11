@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mic, Plus, Smile, Lightbulb, AlertTriangle, Menu, Send } from 'lucide-react';
+import { Mic, Plus, Smile, Lightbulb, AlertTriangle, Send } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
@@ -13,13 +13,12 @@ interface SuggestionCard {
   color: string;
 }
 
-interface ChatInterfaceProps {
-  onToggleSidebar: () => void;
-}
+// No props are required for ChatInterface
+type ChatInterfaceProps = object;
 
-const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar }) => {
+const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   const [message, setMessage] = useState('');
-  const { currentConversation, isTyping, sendMessage, startNewConversation } = useChat();
+  const { currentConversation, isTyping, sendMessage } = useChat();
   
   const hasMessages = currentConversation && currentConversation.messages.length > 0;
 
@@ -78,37 +77,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = ({ onToggleSidebar }) => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white">
-      {/* Header */}
-      <header className="px-4 lg:px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          {/* Sidebar toggle button - always visible */}
-          <button
-            onClick={onToggleSidebar}
-            className="p-2 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
-            title="Open sidebar menu"
-            aria-label="Open sidebar menu"
-          >
-            <Menu size={22} />
-          </button>
-          <h2 className="text-lg font-semibold text-gray-900">Secure Chat</h2>
-        </div>
-        <div className="flex items-center space-x-3">
-          <div className="flex items-center space-x-2 text-sm text-gray-600">
-            <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-            <span>Protected</span>
-          </div>
-          {/* New Chat icon button */}
-          <button
-            onClick={startNewConversation}
-            className="ml-4 p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full border border-gray-300 transition-colors"
-            title="Start a new chat"
-            aria-label="Start a new chat"
-          >
-            <Plus size={20} />
-          </button>
-        </div>
-      </header>
+    <div className="flex-1 flex flex-col bg-white">     
 
       {/* Main Content */}
       <main className="flex-1 flex flex-col px-4 sm:px-6">

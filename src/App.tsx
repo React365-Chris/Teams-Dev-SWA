@@ -2,6 +2,10 @@ import  { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
 import ProfilePage from './components/ProfilePage';
+import Header from './components/Header';
+import SearchPage from './components/SearchPage';
+import CreateAgentPage from './components/CreateAgentPage';
+import { Plus } from 'lucide-react';
 
 function App() {
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
@@ -18,7 +22,7 @@ function App() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [route, setRoute] = useState<'chat' | 'profile'>('chat');
+  const [route, setRoute] = useState<'chat' | 'profile' | 'search' | 'agents' | 'conversations' | 'createAgent'>('chat');
 
   const toggleSidebar = () => {
     setSidebarOpen(true);
@@ -48,11 +52,41 @@ function App() {
         onNavigate={setRoute}
       />
       <div className="flex-1 flex flex-col min-w-0 bg-white max-w-full">
-        {route === 'chat' ? (
-          <ChatInterface onToggleSidebar={toggleSidebar} />
-        ) : (
-          <ProfilePage user={user} />
-        )}
+        {/* Shared Header for all pages */}
+        <Header
+          title={
+            route === 'chat' ? 'Secure Chat'
+            : route === 'profile' ? 'Secure Profile'
+            : route === 'search' ? 'Search'
+            : route === 'conversations' ? 'Conversations'
+            : route === 'createAgent' ? 'Create Agent'
+            : ''
+          }
+          onToggleSidebar={toggleSidebar}
+          actions={route === 'chat' ? (
+            <>
+              <div className="flex items-center space-x-2 text-sm text-gray-600">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span>Protected</span>
+              </div>
+              <button
+                className="ml-4 p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full border border-gray-300 transition-colors"
+                title="Start a new chat"
+                aria-label="Start a new chat"
+                onClick={() => {/* Add new chat logic here if needed */}}
+              >
+                <Plus size={20} />
+              </button>
+            </>
+          ) : <div />}
+        />
+        {/* Page content below header */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {route === 'chat' && <ChatInterface />}
+          {route === 'profile' && <ProfilePage user={user} />}
+          {route === 'search' && <SearchPage />}
+          {route === 'createAgent' && <CreateAgentPage />}
+        </div>
       </div>
     </div>
   );

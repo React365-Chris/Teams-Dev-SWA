@@ -13,24 +13,26 @@ import {
   X
 } from 'lucide-react';
 
+type SidebarRoute = 'chat' | 'profile' | 'search' | 'agents' | 'conversations' | 'createAgent';
+
 interface SidebarProps {
   className?: string;
   isOpen: boolean;
   isCollapsed?: boolean;
   onToggle: () => void;
   onCollapse?: () => void;
-  onNavigate?: (route: 'chat' | 'profile') => void;
+  onNavigate?: (route: SidebarRoute) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed = false, onToggle, onCollapse, onNavigate }) => {
   // Helper: collapse sidebar after navigation (for mobile)
-  const handleNavigate = (route: 'chat' | 'profile') => {
+  const handleNavigate = (route: SidebarRoute) => {
     if (onNavigate) onNavigate(route);
     if (window.matchMedia('(max-width: 640px)').matches && onCollapse) {
       onCollapse();
     }
   };
-  const [agentsExpanded, setAgentsExpanded] = useState(true);
+  const [agentsExpanded, setAgentsExpanded] = useState(false);
   const [conversationsExpanded, setConversationsExpanded] = useState(false);
 
   return (
@@ -65,7 +67,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
           <div className="w-8 h-8 bg-red-600 rounded flex items-center justify-center">
             <span className="text-white font-semibold text-sm">M</span>
           </div>
-          <h1 className="text-lg font-semibold text-gray-900">AI Forms</h1>
+          <h1 className="text-lg font-semibold text-gray-900">Teams-Dev</h1>
         </div>
         {/* Collapse button */}
         <button
@@ -78,27 +80,34 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
         </button>
       </div>
 
-  {/* ...existing code... */}
-
       {/* Navigation */}
       <nav className={`flex-1 ${isCollapsed ? 'p-1' : 'p-2'}`}> 
         <div className="space-y-1">
           {/* Chat */}
           <button 
             className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
-            onClick={() => handleNavigate('chat')}
+            onClick={() => {
+              handleNavigate('chat');
+              if (onCollapse) onCollapse();
+            }}
           >
             <MessageSquare size={16} />
             {!isCollapsed && <span className="text-sm font-medium">Chat</span>}
           </button>
 
           {/* Search */}
-          <button className="w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+          <button 
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
+            onClick={() => {
+              if (onNavigate) onNavigate('search');
+              if (onCollapse) onCollapse();
+            }}
+          >
             <Search size={16} />
-            <span className="text-sm font-medium">Search</span>
+            {!isCollapsed && <span className="text-sm font-medium">Search</span>}
           </button>
 
-          {/* Agents Section */}
+           {/* Agents Section */}
           <div className="mt-4">
             <button 
               onClick={() => setAgentsExpanded(!agentsExpanded)}
@@ -143,10 +152,17 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
           </div>
 
           {/* Create Agent */}
-          <button className="w-full flex items-center space-x-3 px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors mt-4">
+          <button 
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
+            onClick={() => {
+              if (onNavigate) onNavigate('createAgent');
+              if (onCollapse) onCollapse();
+            }}
+          >
             <Plus size={16} />
-            <span className="text-sm font-medium">Create Agent</span>
+            {!isCollapsed && <span className="text-sm font-medium">Create Agent</span>}
           </button>
+          
         </div>
       </nav>
 
@@ -154,7 +170,10 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
       <div className="p-2 border-t border-gray-200">
         <button 
           className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
-          onClick={() => handleNavigate('profile')}
+          onClick={() => {
+            handleNavigate('profile');
+            if (onCollapse) onCollapse();
+          }}
         >
           <User size={16} />
           {!isCollapsed && <span className="text-sm font-medium">Profile</span>}
