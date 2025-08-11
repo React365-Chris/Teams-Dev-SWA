@@ -25,6 +25,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed = false, onToggle, onCollapse, onNavigate }) => {
+  // Auto-close sidebar overlay on route change (mobile)
+  React.useEffect(() => {
+    if (window.matchMedia('(max-width: 640px)').matches && isOpen && onCollapse) {
+      onCollapse();
+    }
+    // eslint-disable-next-line
+  }, [window.location.pathname]);
   // Helper: collapse sidebar after navigation (for mobile)
   const handleNavigate = (route: SidebarRoute) => {
     if (onNavigate) onNavigate(route);
