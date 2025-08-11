@@ -33,6 +33,9 @@ function App() {
   };
   const collapseSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
+    if (typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches) {
+      setSidebarOpen(false);
+    }
   };
 
   // Example user data, replace with real M365 info
@@ -47,13 +50,13 @@ function App() {
   return (
     <div className="h-screen flex app-surface overflow-hidden relative">
       {/* Sidebar and expand button */}
-      <Sidebar 
-        isOpen={sidebarOpen} 
-        isCollapsed={sidebarCollapsed}
-        onToggle={toggleSidebar}
-        onCollapse={collapseSidebar}
-        onNavigate={setRoute}
-      />
+        <Sidebar
+          isOpen={sidebarOpen}
+          isCollapsed={sidebarCollapsed}
+          onToggle={toggleSidebar}
+          onCollapse={collapseSidebar}
+          onNavigate={setRoute}
+        />
       <div className="flex-1 flex flex-col min-w-0 app-surface max-w-full">
         {/* Shared Header for all pages */}
         <Header
