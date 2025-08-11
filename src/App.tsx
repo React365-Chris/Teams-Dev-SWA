@@ -1,11 +1,23 @@
-import  { useState } from 'react';
+import  { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
 import ProfilePage from './components/ProfilePage';
 
 function App() {
-  const [sidebarOpen, setSidebarOpen] = useState(true); // default to open on desktop
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile); // open on desktop, collapsed on mobile
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(isMobile);
+
+  // Responsive: update sidebar state on window resize
+  useEffect(() => {
+    const handleResize = () => {
+      const mobile = window.matchMedia('(max-width: 640px)').matches;
+      setSidebarOpen(!mobile);
+      setSidebarCollapsed(mobile);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   const [route, setRoute] = useState<'chat' | 'profile'>('chat');
 
   const toggleSidebar = () => {
