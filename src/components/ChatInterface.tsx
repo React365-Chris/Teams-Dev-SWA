@@ -77,17 +77,17 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white">     
+    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900">     
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col px-4 sm:px-6">
+  <main className="flex-1 flex flex-col px-4 sm:px-6">
         {hasMessages ? (
           /* Chat Messages */
           <div className="flex-1 overflow-y-auto py-6">
             <div className="max-w-4xl mx-auto">
               {/* Date separator */}
               <div className="text-center mb-6">
-                <span className="text-xs text-gray-500 bg-white px-3 py-1 rounded-full border">
+                <span className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-neutral-900 px-3 py-1 rounded-full border border-gray-200 dark:border-neutral-800">
                   Today
                 </span>
               </div>
@@ -123,22 +123,22 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
               </div>
               
               {/* Suggestion Cards */}
-              <div className="grid gap-3 sm:grid-cols-1 mb-8">
+      <div className="grid gap-3 sm:grid-cols-1 mb-8">
                 {suggestions.map((suggestion) => (
                   <button
                     key={suggestion.id}
                     onClick={() => handleSuggestionClick(suggestion)}
-                    className={`w-full p-3 sm:p-4 border rounded-lg text-left transition-all ${suggestion.color}`}
+        className={`w-full p-3 sm:p-4 border rounded-lg text-left transition-all ${suggestion.color} dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700`}
                   >
                     <div className="flex items-start space-x-3">
                       <div className="mt-0.5">
                         {suggestion.icon}
                       </div>
                       <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 mb-1">
+                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
                           {suggestion.title}
                         </h4>
-                        <p className="text-xs text-gray-600">
+                        <p className="text-xs text-gray-600 dark:text-gray-300">
                           {suggestion.subtitle}
                         </p>
                       </div>
@@ -149,7 +149,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
 
               {/* See more link */}
               <div className="text-center">
-                <button className="text-sm text-gray-600 hover:text-gray-800 transition-colors">
+                <button className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors">
                   See more →
                 </button>
               </div>
@@ -158,11 +158,11 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
         )}
 
         {/* Message Input - Fixed at bottom */}
-        <div className="border-t border-gray-200 bg-white p-4">
+        <div className="border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
           <div className="max-w-4xl mx-auto">
             <div className="flex items-end space-x-3">
               <button
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
                 title="Add attachment"
                 aria-label="Add attachment"
               >
@@ -175,13 +175,13 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                   onChange={(e) => setMessage(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Message Secure Chat"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg resize-none focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all chat-textarea"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea"
                   rows={1}
                 />
               </div>
               
               <button
-                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
                 title="Record voice message"
                 aria-label="Record voice message"
               >
@@ -191,7 +191,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
               <button 
                 onClick={handleSendMessage}
                 disabled={!message.trim()}
-                className="p-2 text-blue-600 hover:text-blue-700 disabled:text-gray-400 disabled:cursor-not-allowed transition-colors"
+                className="p-2 text-[var(--color-accent)] hover:text-[var(--color-accent-strong)] disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
                 title="Send message"
                 aria-label="Send message"
               >
@@ -201,7 +201,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
             
             {/* AI disclaimer */}
             <div className="text-center mt-2">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 AI-generated content may be incorrect
               </span>
             </div>

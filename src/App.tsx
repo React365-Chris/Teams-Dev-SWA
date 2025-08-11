@@ -6,6 +6,7 @@ import Header from './components/Header';
 import SearchPage from './components/SearchPage';
 import CreateAgentPage from './components/CreateAgentPage';
 import { Plus } from 'lucide-react';
+import { useTeamsTheme } from './hooks/useTeamsTheme';
 
 function App() {
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
@@ -23,6 +24,8 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
   const [route, setRoute] = useState<'chat' | 'profile' | 'search' | 'agents' | 'conversations' | 'createAgent'>('chat');
+  // Sync app theme with system/Teams
+  useTeamsTheme();
 
   const toggleSidebar = () => {
     setSidebarOpen(true);
@@ -42,7 +45,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen flex bg-gray-50 overflow-hidden relative">
+    <div className="h-screen flex app-surface overflow-hidden relative">
       {/* Sidebar and expand button */}
       <Sidebar 
         isOpen={sidebarOpen} 
@@ -51,7 +54,7 @@ function App() {
         onCollapse={collapseSidebar}
         onNavigate={setRoute}
       />
-      <div className="flex-1 flex flex-col min-w-0 bg-white max-w-full">
+      <div className="flex-1 flex flex-col min-w-0 app-surface max-w-full">
         {/* Shared Header for all pages */}
         <Header
           title={
@@ -65,12 +68,12 @@ function App() {
           onToggleSidebar={toggleSidebar}
           actions={route === 'chat' ? (
             <>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="flex items-center space-x-2 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                 <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                 <span>Protected</span>
               </div>
               <button
-                className="ml-4 p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-full border border-gray-300 transition-colors"
+                className="ml-4 p-2 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-200 rounded-full border border-gray-300 dark:border-neutral-700 transition-colors"
                 title="Start a new chat"
                 aria-label="Start a new chat"
                 onClick={() => {/* Add new chat logic here if needed */}}

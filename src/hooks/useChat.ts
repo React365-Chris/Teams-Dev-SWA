@@ -117,7 +117,7 @@ export const useChat = () => {
       // Get AI response
       const aiResponse = await mockApiCall(content);
       
-      const assistantMessage: Message = {
+  const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: aiResponse,
         role: 'assistant',
@@ -125,7 +125,7 @@ export const useChat = () => {
       };
 
       // Update conversation with AI response
-      const finalConversation: Conversation = {
+  const finalConversation: Conversation = {
         ...updatedConversation,
         messages: [...updatedConversation.messages, assistantMessage],
         updatedAt: new Date(),
