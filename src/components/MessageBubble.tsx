@@ -68,19 +68,39 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isLatest = false
         
         {!isUser && isLatest && (
           <div className="flex items-center space-x-2 mt-3">
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+            <button
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="Copy message"
+              aria-label="Copy message"
+            >
               <Copy size={14} />
             </button>
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+            <button
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="Thumbs up"
+              aria-label="Thumbs up"
+            >
               <ThumbsUp size={14} />
             </button>
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+            <button
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="Thumbs down"
+              aria-label="Thumbs down"
+            >
               <ThumbsDown size={14} />
             </button>
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+            <button
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="Regenerate"
+              aria-label="Regenerate"
+            >
               <RotateCcw size={14} />
             </button>
-            <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors">
+            <button
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              title="Read aloud"
+              aria-label="Read aloud"
+            >
               <Volume2 size={14} />
             </button>
           </div>
