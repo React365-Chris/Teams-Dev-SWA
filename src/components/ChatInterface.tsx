@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Plus, Smile, Lightbulb, AlertTriangle, Send } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 import MessageBubble from './MessageBubble';
@@ -19,8 +19,15 @@ type ChatInterfaceProps = object;
 const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   const [message, setMessage] = useState('');
   const { currentConversation, isTyping, sendMessage } = useChat();
-  
   const hasMessages = currentConversation && currentConversation.messages.length > 0;
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to latest message
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [currentConversation?.messages.length, isTyping]);
 
   const suggestions: SuggestionCard[] = [
     {
@@ -77,137 +84,132 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   ];
 
   return (
-    <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900">     
-
-      {/* Main Content */}
-  <main className="flex-1 flex flex-col px-4 sm:px-6">
-        {hasMessages ? (
-          /* Chat Messages */
-          <div className="flex-1 overflow-y-auto py-6">
+      <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 relative">
+        <main className="flex-1 flex flex-col px-4 sm:px-6 pb-[104px]">
+          {/* Make the message list scrollable above the input */}
+          <div
+            className="py-6"
+            style={{
+              maxHeight: 'calc(100vh - 120px)', // 120px = input height + padding
+              overflowY: 'auto',
+            }}
+          >
             <div className="max-w-4xl mx-auto">
-              {/* Date separator */}
-              <div className="text-center mb-6">
-                <span className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-neutral-900 px-3 py-1 rounded-full border border-gray-200 dark:border-neutral-800">
-                  Today
-                </span>
-              </div>
-              
-              {/* Messages */}
-              {currentConversation?.messages.map((msg, index) => (
-                <MessageBubble 
-                  key={msg.id} 
-                  message={msg} 
-                  isLatest={index === currentConversation.messages.length - 1 && msg.role === 'assistant'}
-                />
-              ))}
-              
-              {/* Typing indicator */}
-              {isTyping && <TypingIndicator />}
-              
-              {/* Follow-up suggestions */}
-              {!isTyping && hasMessages && currentConversation?.messages[currentConversation.messages.length - 1]?.role === 'assistant' && (
-                <SuggestionChips 
-                  suggestions={followUpSuggestions}
-                  onSuggestionClick={handleSuggestionChipClick}
-                />
-              )}
-            </div>
-          </div>
-        ) : (
-          /* Welcome Screen */
-          <div className="flex-1 flex flex-col items-center justify-center py-8 sm:py-12">
-            <div className="w-full max-w-2xl">
-              {/* Greeting */}
-              <div className="text-center mb-8">
-                <h3 className="text-xl sm:text-2xl font-medium text-gray-900 mb-4">Hi, how can I help?</h3>
-              </div>
-              
-              {/* Suggestion Cards */}
-      <div className="grid gap-3 sm:grid-cols-1 mb-8">
-                {suggestions.map((suggestion) => (
-                  <button
-                    key={suggestion.id}
-                    onClick={() => handleSuggestionClick(suggestion)}
-        className={`w-full p-3 sm:p-4 border rounded-lg text-left transition-all ${suggestion.color} dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="mt-0.5">
-                        {suggestion.icon}
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
-                          {suggestion.title}
-                        </h4>
-                        <p className="text-xs text-gray-600 dark:text-gray-300">
-                          {suggestion.subtitle}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
+            {hasMessages ? (
+              <>
+                {/* Date separator */}
+                <div className="text-center mb-6">
+                  <span className="text-xs text-gray-500 dark:text-gray-400 bg-white dark:bg-neutral-900 px-3 py-1 rounded-full border border-gray-200 dark:border-neutral-800">
+                    Today
+                  </span>
+                </div>
+                {/* Messages */}
+                {currentConversation?.messages.map((msg, index) => (
+                  <MessageBubble 
+                    key={msg.id} 
+                    message={msg} 
+                    isLatest={index === currentConversation.messages.length - 1 && msg.role === 'assistant'}
+                  />
                 ))}
-              </div>
-
-              {/* See more link */}
-              <div className="text-center">
-                <button className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors">
-                  See more →
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Message Input - Fixed at bottom */}
-        <div className="border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-end space-x-3">
-              <button
-                className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
-                title="Add attachment"
-                aria-label="Add attachment"
-              >
-                <Plus size={20} />
-              </button>
-              
-              <div className="flex-1 relative">
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Message Secure Chat"
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea"
-                  rows={1}
-                />
-              </div>
-              
-              <button
-                className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
-                title="Record voice message"
-                aria-label="Record voice message"
-              >
-                <Mic size={20} />
-              </button>
-              
-              <button 
-                onClick={handleSendMessage}
-                disabled={!message.trim()}
-                className="p-2 text-[var(--color-accent)] hover:text-[var(--color-accent-strong)] disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
-                title="Send message"
-                aria-label="Send message"
-              >
-                <Send size={20} />
-              </button>
-            </div>
-            
-            {/* AI disclaimer */}
-            <div className="text-center mt-2">
-              <span className="text-xs text-gray-500 dark:text-gray-400">
-                AI-generated content may be incorrect
-              </span>
-            </div>
+                {/* Typing indicator */}
+                {isTyping && <TypingIndicator />}
+                {/* Follow-up suggestions */}
+                {!isTyping && hasMessages && currentConversation?.messages[currentConversation.messages.length - 1]?.role === 'assistant' && (
+                  <SuggestionChips 
+                    suggestions={followUpSuggestions}
+                    onSuggestionClick={handleSuggestionChipClick}
+                  />
+                )}
+                {/* Scroll anchor */}
+                <div ref={messagesEndRef} />
+              </>
+            ) : (
+              <>
+                {/* Greeting */}
+                <div className="text-center mb-8">
+                  <h3 className="text-xl sm:text-2xl font-medium text-gray-900 mb-4">Hi, how can I help?</h3>
+                </div>
+                {/* Suggestion Cards */}
+                <div className="grid gap-3 sm:grid-cols-1 mb-8">
+                  {suggestions.map((suggestion) => (
+                    <button
+                      key={suggestion.id}
+                      onClick={() => handleSuggestionClick(suggestion)}
+                      className={`w-full p-3 sm:p-4 border rounded-lg text-left transition-all ${suggestion.color} dark:bg-neutral-800 dark:border-neutral-700 dark:hover:bg-neutral-700`}
+                    >
+                      <div className="flex items-start space-x-3">
+                        <div className="mt-0.5">
+                          {suggestion.icon}
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+                            {suggestion.title}
+                          </h4>
+                          <p className="text-xs text-gray-600 dark:text-gray-300">
+                            {suggestion.subtitle}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {/* See more link */}
+                <div className="text-center">
+                  <button className="text-sm text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white transition-colors">
+                    See more →
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </main>
+      {/* Message Input - Sticky at bottom */}
+      <div className="fixed left-0 right-0 bottom-0 z-20 border-t border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-4 shadow-lg">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex items-end space-x-3">
+            <button
+              className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
+              title="Add attachment"
+              aria-label="Add attachment"
+            >
+              <Plus size={20} />
+            </button>
+            <div className="flex-1 relative">
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                onKeyPress={handleKeyPress}
+                placeholder="Message Secure Chat"
+                className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea"
+                rows={1}
+              />
+            </div>
+            <button
+              className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
+              title="Record voice message"
+              aria-label="Record voice message"
+            >
+              <Mic size={20} />
+            </button>
+            <button 
+              onClick={handleSendMessage}
+              disabled={!message.trim()}
+              className="p-2 text-[var(--color-accent)] hover:text-[var(--color-accent-strong)] disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
+              title="Send message"
+              aria-label="Send message"
+            >
+              <Send size={20} />
+            </button>
+          </div>
+          {/* AI disclaimer */}
+          <div className="text-center mt-2">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              AI-generated content may be incorrect
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

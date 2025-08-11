@@ -31,7 +31,7 @@ const MessageBubble: React.FC<MessageBubbleProps> = ({ message, isLatest = false
       <div className={`flex-1 max-w-3xl ${isUser ? 'flex justify-end' : ''}`}>
         {!isUser && (
           <div className="flex items-center space-x-2 mb-2">
-            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Copilot</span>
+            <span className="text-sm font-medium text-gray-900 dark:text-gray-100">Secure Chat</span>
             <div className="w-4 h-4 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center">
               <span className="text-xs text-purple-600 dark:text-purple-300">?</span>
             </div>

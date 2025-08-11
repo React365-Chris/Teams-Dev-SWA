@@ -1,3 +1,24 @@
+/* Chat scroll area height */
+.chat-scroll-area {
+  max-height: calc(100vh - 104px);
+  min-height: 0;
+}
+
+/* Message animation delay classes */
+[class*="message-anim-"] {
+  animation-fill-mode: both;
+}
+.message-anim-0 { animation-delay: 0ms; }
+.message-anim-1 { animation-delay: 60ms; }
+.message-anim-2 { animation-delay: 120ms; }
+.message-anim-3 { animation-delay: 180ms; }
+.message-anim-4 { animation-delay: 240ms; }
+.message-anim-5 { animation-delay: 300ms; }
+.message-anim-6 { animation-delay: 360ms; }
+.message-anim-7 { animation-delay: 420ms; }
+.message-anim-8 { animation-delay: 480ms; }
+.message-anim-9 { animation-delay: 540ms; }
+/* Add more as needed for longer message lists */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -70,6 +91,21 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+@keyframes slide-fade-in-message {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-fade-in-message {
+  animation: slide-fade-in-message 0.35s cubic-bezier(.4,0,.2,1);
 }
 
 .animate-fade-in {
