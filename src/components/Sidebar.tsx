@@ -23,6 +23,13 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed = false, onToggle, onCollapse, onNavigate }) => {
+  // Helper: collapse sidebar after navigation (for mobile)
+  const handleNavigate = (route: 'chat' | 'profile') => {
+    if (onNavigate) onNavigate(route);
+    if (window.matchMedia('(max-width: 640px)').matches && onCollapse) {
+      onCollapse();
+    }
+  };
   const [agentsExpanded, setAgentsExpanded] = useState(true);
   const [conversationsExpanded, setConversationsExpanded] = useState(false);
 
@@ -79,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
           {/* Chat */}
           <button 
             className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
-            onClick={() => onNavigate && onNavigate('chat')}
+            onClick={() => handleNavigate('chat')}
           >
             <MessageSquare size={16} />
             {!isCollapsed && <span className="text-sm font-medium">Chat</span>}
@@ -147,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({ className = '', isOpen, isCollapsed =
       <div className="p-2 border-t border-gray-200">
         <button 
           className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'space-x-3'} px-3 py-2 text-left text-gray-700 hover:bg-gray-100 rounded-md transition-colors`}
-          onClick={() => onNavigate && onNavigate('profile')}
+          onClick={() => handleNavigate('profile')}
         >
           <User size={16} />
           {!isCollapsed && <span className="text-sm font-medium">Profile</span>}
