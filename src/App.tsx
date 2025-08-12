@@ -2,11 +2,13 @@ import  { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
 import ProfilePage from './components/ProfilePage';
-import Header from './components/Header';
 import SearchPage from './components/SearchPage';
-import CreateAgentPage from './components/CreateAgentPage';
+import PromptCoachPage from './components/PromptCoach';
+import Header from './components/Header';
+import DesignAgentPage from './components/DesignAgentPage';
 import { Plus } from 'lucide-react';
 import { useTeamsTheme } from './hooks/useTeamsTheme';
+import TimeEntryPage from './components/TimeEntryPage';
 
 function App() {
   const isMobile = typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches;
@@ -23,13 +25,18 @@ function App() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
-  const [route, setRoute] = useState<'chat' | 'profile' | 'search' | 'agents' | 'conversations' | 'createAgent'>('chat');
+  const [route, setRoute] = useState<'chat' | 'profile' | 'agents' | 'conversations' | 'designagent' | 'search' | 'promptcoach' | 'timeentry'>('chat');
   // Sync app theme with system/Teams
   useTeamsTheme();
 
   const toggleSidebar = () => {
     setSidebarOpen(true);
     setSidebarCollapsed(false);
+  };
+
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+    setSidebarCollapsed(true);
   };
   const collapseSidebar = () => {
     setSidebarCollapsed(!sidebarCollapsed);
@@ -53,7 +60,7 @@ function App() {
         <Sidebar
           isOpen={sidebarOpen}
           isCollapsed={sidebarCollapsed}
-          onToggle={toggleSidebar}
+          onToggle={closeSidebar}
           onCollapse={collapseSidebar}
           onNavigate={setRoute}
         />
@@ -63,9 +70,8 @@ function App() {
           title={
             route === 'chat' ? 'Secure Chat'
             : route === 'profile' ? 'Secure Profile'
-            : route === 'search' ? 'Search'
             : route === 'conversations' ? 'Conversations'
-            : route === 'createAgent' ? 'Create Agent'
+            : route === 'designagent' ? 'Design Agent'
             : ''
           }
           onToggleSidebar={toggleSidebar}
@@ -90,8 +96,10 @@ function App() {
         <div className="flex-1 flex flex-col min-w-0">
           {route === 'chat' && <ChatInterface />}
           {route === 'profile' && <ProfilePage user={user} />}
+          {route === 'designagent' && <DesignAgentPage />}
           {route === 'search' && <SearchPage />}
-          {route === 'createAgent' && <CreateAgentPage />}
+          {route === 'promptcoach' && <PromptCoachPage />}
+          {route === 'timeentry' && <TimeEntryPage />}
         </div>
       </div>
     </div>

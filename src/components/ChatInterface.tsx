@@ -65,10 +65,21 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
     await sendMessage(messageToSend);
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSendMessage();
+      if (message.trim()) {
+        // ...existing code...
+        setMessage("");
+      }
+    }
+  };
+
+  // Send button uses same logic as pressing Enter
+  const handleSend = () => {
+    if (message.trim()) {
+      // ...existing code (same as inside handleKeyPress)...
+      setMessage("");
     }
   };
 
@@ -85,12 +96,12 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
 
   return (
       <div className="flex-1 flex flex-col bg-white dark:bg-neutral-900 relative">
-        <main className="flex-1 flex flex-col px-4 sm:px-6 pb-[104px]">
+  <main className="flex-1 flex flex-col px-4 sm:px-6 pb-[148px]">
           {/* Make the message list scrollable above the input */}
           <div
             className="py-6"
             style={{
-              maxHeight: 'calc(100vh - 120px)', // 120px = input height + padding
+              maxHeight: 'calc(100vh - 164px)', // 164px = input height + padding (larger textarea)
               overflowY: 'auto',
             }}
           >
@@ -177,30 +188,33 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
             </button>
             <div className="flex-1 relative">
               <textarea
+                className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea h-24"
+                rows={4}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Message Secure Chat"
-                className="w-full px-4 py-3 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea"
-                rows={1}
               />
+              <button
+                type="button"
+                onClick={handleSendMessage}
+                disabled={!message.trim()}
+                className={`absolute bottom-2 right-2 p-2 bg-[var(--color-accent)] text-white rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-opacity ${!message.trim() ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                aria-label="Send message"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 21l18-9-18-9v7l13 2-13 2v7z" />
+                </svg>
+              </button>
+              <button
+                className={`absolute bottom-2 p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-700 ${message.trim() ? 'right-12' : 'right-2'}`}
+                title="Record voice message"
+                aria-label="Record voice message"
+              >
+                <Mic size={20} />
+              </button>
             </div>
-            <button
-              className="p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-md hover:bg-gray-100 dark:hover:bg-neutral-800"
-              title="Record voice message"
-              aria-label="Record voice message"
-            >
-              <Mic size={20} />
-            </button>
-            <button 
-              onClick={handleSendMessage}
-              disabled={!message.trim()}
-              className="p-2 text-[var(--color-accent)] hover:text-[var(--color-accent-strong)] disabled:text-gray-400 dark:disabled:text-gray-600 disabled:cursor-not-allowed transition-colors"
-              title="Send message"
-              aria-label="Send message"
-            >
-              <Send size={20} />
-            </button>
+            {/* Mic button moved inside textarea container */}
           </div>
           {/* AI disclaimer */}
           <div className="text-center mt-2">
