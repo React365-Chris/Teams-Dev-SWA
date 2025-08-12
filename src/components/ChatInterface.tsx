@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
-import { Mic, Plus, Smile, Lightbulb, AlertTriangle, Send } from 'lucide-react';
+import { Mic, Plus, Smile, Lightbulb, AlertTriangle } from 'lucide-react';
 import { useChat } from '../hooks/useChat';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
@@ -21,6 +22,47 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   const { currentConversation, isTyping, sendMessage } = useChat();
   const hasMessages = currentConversation && currentConversation.messages.length > 0;
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Voice-to-text state and handler
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
+  const handleMicClick = () => {
+    const SpeechRecognitionClass = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognitionClass) {
+      alert('Speech recognition is not supported in this browser.');
+      return;
+    }
+    if (isRecording) {
+      recognitionRef.current?.stop();
+      setIsRecording(false);
+      return;
+    }
+    const recognition = new SpeechRecognitionClass();
+    recognition.lang = 'en-US';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setMessage((prev: string) => prev ? prev + ' ' + transcript : transcript);
+      setIsRecording(false);
+    };
+    recognition.onerror = () => {
+      setIsRecording(false);
+    };
+    recognition.onend = () => {
+      setIsRecording(false);
+    };
+    recognitionRef.current = recognition;
+    recognition.start();
+    setIsRecording(true);
+  };
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  }, []);
 
   // Auto-scroll to latest message
   useEffect(() => {
@@ -68,18 +110,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      if (message.trim()) {
-        // ...existing code...
-        setMessage("");
-      }
-    }
-  };
-
-  // Send button uses same logic as pressing Enter
-  const handleSend = () => {
-    if (message.trim()) {
-      // ...existing code (same as inside handleKeyPress)...
-      setMessage("");
+      handleSendMessage();
     }
   };
 
@@ -188,6 +219,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
             </button>
             <div className="flex-1 relative">
               <textarea
+                ref={textareaRef}
                 className="w-full px-4 py-3 pr-12 border border-gray-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-lg resize-none focus:outline-none focus:border-[var(--color-accent)] focus:ring-1 focus:ring-[var(--color-accent)] transition-all chat-textarea h-24"
                 rows={4}
                 value={message}
@@ -199,7 +231,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                 type="button"
                 onClick={handleSendMessage}
                 disabled={!message.trim()}
-                className={`absolute bottom-2 right-2 p-2 bg-[var(--color-accent)] text-white rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-opacity ${!message.trim() ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+                className={`absolute bottom-4 right-2 p-2 bg-[var(--color-accent)] text-white rounded-full shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-opacity ${!message.trim() ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
                 aria-label="Send message"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
@@ -207,8 +239,10 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                 </svg>
               </button>
               <button
-                className={`absolute bottom-2 p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-700 ${message.trim() ? 'right-12' : 'right-2'}`}
-                title="Record voice message"
+                type="button"
+                onClick={handleMicClick}
+                className={`absolute bottom-2 p-2 text-gray-500 dark:text-gray-300 hover:text-gray-700 dark:hover:text-white transition-colors rounded-full hover:bg-gray-100 dark:hover:bg-neutral-800 transition-all duration-700 ${message.trim() ? 'right-12' : 'right-2'} ${isRecording ? 'animate-pulse bg-blue-100' : ''}`}
+                title={isRecording ? "Listening..." : "Record voice message"}
                 aria-label="Record voice message"
               >
                 <Mic size={20} />
