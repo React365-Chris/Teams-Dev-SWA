@@ -1,4 +1,5 @@
 import  { useState, useEffect } from 'react';
+import { useChat } from './hooks/useChat';
 import Sidebar from './components/Sidebar';
 import ChatInterface from './components/ChatInterface';
 import ProfilePage from './components/ProfilePage';
@@ -28,6 +29,9 @@ function App() {
   const [route, setRoute] = useState<'chat' | 'profile' | 'agents' | 'conversations' | 'designagent' | 'search' | 'promptcoach' | 'timeentry'>('chat');
   // Sync app theme with system/Teams
   useTeamsTheme();
+
+  // Chat state and actions
+  const chat = useChat();
 
   const toggleSidebar = () => {
     setSidebarOpen(true);
@@ -85,7 +89,7 @@ function App() {
                 className="ml-4 p-2 bg-gray-100 dark:bg-neutral-800 hover:bg-gray-200 dark:hover:bg-neutral-700 text-gray-700 dark:text-gray-200 rounded-full border border-gray-300 dark:border-neutral-700 transition-colors"
                 title="Start a new chat"
                 aria-label="Start a new chat"
-                onClick={() => {/* Add new chat logic here if needed */}}
+                onClick={chat.startNewConversation}
               >
                 <Plus size={20} />
               </button>
@@ -94,7 +98,7 @@ function App() {
         />
         {/* Page content below header */}
         <div className="flex-1 flex flex-col min-w-0">
-          {route === 'chat' && <ChatInterface />}
+          {route === 'chat' && <ChatInterface {...chat} />}
           {route === 'profile' && <ProfilePage user={user} />}
           {route === 'designagent' && <DesignAgentPage />}
           {route === 'search' && <SearchPage />}

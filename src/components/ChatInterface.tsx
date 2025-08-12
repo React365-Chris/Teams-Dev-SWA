@@ -1,7 +1,7 @@
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Plus, Smile, Lightbulb, AlertTriangle } from 'lucide-react';
-import { useChat } from '../hooks/useChat';
 import MessageBubble from './MessageBubble';
 import TypingIndicator from './TypingIndicator';
 import SuggestionChips from './SuggestionChips';
@@ -14,12 +14,17 @@ interface SuggestionCard {
   color: string;
 }
 
-// No props are required for ChatInterface
-type ChatInterfaceProps = object;
+interface ChatInterfaceProps {
+  currentConversation: any;
+  isTyping: boolean;
+  sendMessage: (msg: string) => Promise<void>;
+  startNewConversation: () => void;
+  loadConversation: (id: string) => void;
+  conversations: any[];
+}
 
-const ChatInterface: React.FC<ChatInterfaceProps> = () => {
+const ChatInterface: React.FC<ChatInterfaceProps> = ({ currentConversation, isTyping, sendMessage }) => {
   const [message, setMessage] = useState('');
-  const { currentConversation, isTyping, sendMessage } = useChat();
   const hasMessages = currentConversation && currentConversation.messages.length > 0;
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -130,11 +135,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
   <main className="flex-1 flex flex-col px-4 sm:px-6 pb-[148px]">
           {/* Make the message list scrollable above the input */}
           <div
-            className="py-6"
-            style={{
-              maxHeight: 'calc(100vh - 164px)', // 164px = input height + padding (larger textarea)
-              overflowY: 'auto',
-            }}
+            className="py-6 max-h-[calc(100vh-164px)] overflow-y-auto"
           >
             <div className="max-w-4xl mx-auto">
             {hasMessages ? (
@@ -146,7 +147,7 @@ const ChatInterface: React.FC<ChatInterfaceProps> = () => {
                   </span>
                 </div>
                 {/* Messages */}
-                {currentConversation?.messages.map((msg, index) => (
+                {currentConversation?.messages.map((msg: import('../types/chat').Message, index: number) => (
                   <MessageBubble 
                     key={msg.id} 
                     message={msg} 
